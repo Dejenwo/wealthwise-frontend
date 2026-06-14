@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../api/client'
 
 export default function Goals() {
@@ -46,7 +47,7 @@ export default function Goals() {
   const handleContribute = async (goalId) => {
     if (!contribution || isNaN(contribution)) return
     try {
-      await api.post(`/goals/${goalId}/contribute`, { amount: parseFloat(contribution) })
+      await api.post('/goals/' + goalId + '/contribute', { amount: parseFloat(contribution) })
       setContributeId(null)
       setContribution('')
       fetchGoals()
@@ -57,7 +58,7 @@ export default function Goals() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this goal?')) return
-    await api.delete(`/goals/${id}`)
+    await api.delete('/goals/' + id)
     fetchGoals()
   }
 
@@ -73,20 +74,23 @@ export default function Goals() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <a href="/dashboard" className="text-lg font-semibold text-gray-900">WealthWise</a>
+          <Link to="/dashboard" className="text-lg font-semibold text-gray-900 hover:text-blue-600">WealthWise</Link>
           <span className="text-gray-300">|</span>
           <span className="text-sm text-gray-500">Goals</span>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          + New Goal
-        </button>
+        <div className="flex items-center gap-4">
+          <Link to="/dashboard" className="text-sm text-gray-600 hover:text-blue-600">Dashboard</Link>
+          <Link to="/transactions" className="text-sm text-gray-600 hover:text-blue-600">Transactions</Link>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            + New Goal
+          </button>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Add Form */}
         {showForm && (
           <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
             <h3 className="text-sm font-semibold text-gray-900 mb-4">New Savings Goal</h3>
@@ -94,38 +98,69 @@ export default function Goals() {
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
                 <label className="block text-xs text-gray-600 mb-1">Goal Name</label>
-                <input required value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+                <input
+                  required
+                  value={form.name}
+                  onChange={e => setForm({...form, name: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  placeholder="e.g. Emergency Fund" />
+                  placeholder="e.g. Emergency Fund"
+                />
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Target Amount ($)</label>
-                <input required type="number" step="0.01" min="0" value={form.target_amount}
+                <input
+                  required
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={form.target_amount}
                   onChange={e => setForm({...form, target_amount: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="10000" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  placeholder="10000"
+                />
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Already Saved ($)</label>
-                <input type="number" step="0.01" min="0" value={form.current_amount}
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={form.current_amount}
                   onChange={e => setForm({...form, current_amount: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="0" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  placeholder="0"
+                />
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Target Date (optional)</label>
-                <input type="date" value={form.target_date} onChange={e => setForm({...form, target_date: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <input
+                  type="date"
+                  value={form.target_date}
+                  onChange={e => setForm({...form, target_date: e.target.value})}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                />
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Color</label>
-                <input type="color" value={form.color} onChange={e => setForm({...form, color: e.target.value})}
-                  className="w-full h-9 border border-gray-300 rounded-lg px-1 py-1 cursor-pointer" />
+                <input
+                  type="color"
+                  value={form.color}
+                  onChange={e => setForm({...form, color: e.target.value})}
+                  className="w-full h-9 border border-gray-300 rounded-lg px-1 py-1 cursor-pointer"
+                />
               </div>
               <div className="col-span-2 flex gap-2 mt-1">
-                <button type="submit" className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
                   Create Goal
                 </button>
-                <button type="button" onClick={() => setShowForm(false)}
-                  className="border border-gray-300 text-gray-600 text-sm px-4 py-2 rounded-lg hover:bg-gray-50">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="border border-gray-300 text-gray-600 text-sm px-4 py-2 rounded-lg hover:bg-gray-50"
+                >
                   Cancel
                 </button>
               </div>
@@ -133,7 +168,6 @@ export default function Goals() {
           </div>
         )}
 
-        {/* Goals Grid */}
         {loading ? (
           <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>
         ) : goals.length === 0 ? (
@@ -147,7 +181,7 @@ export default function Goals() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900">{g.name}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${statusColor(g.status)}`}>
+                    <span className={'text-xs px-2 py-0.5 rounded-full mt-1 inline-block ' + statusColor(g.status)}>
                       {g.status}
                     </span>
                   </div>
@@ -157,8 +191,10 @@ export default function Goals() {
                 </div>
 
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
-                  <div className="h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(g.percent_complete, 100)}%`, backgroundColor: g.color }} />
+                  <div
+                    className="h-2 rounded-full transition-all"
+                    style={{ width: Math.min(g.percent_complete, 100) + '%', backgroundColor: g.color }}
+                  />
                 </div>
 
                 <div className="text-xs text-gray-500 mb-3">
@@ -168,34 +204,43 @@ export default function Goals() {
                   )}
                 </div>
 
-                {/* Contribute */}
                 {contributeId === g.id ? (
                   <div className="flex gap-2">
                     <input
-                      type="number" step="0.01" min="0"
+                      type="number"
+                      step="0.01"
+                      min="0"
                       value={contribution}
                       onChange={e => setContribution(e.target.value)}
                       className="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm"
                       placeholder="Amount"
                       autoFocus
                     />
-                    <button onClick={() => handleContribute(g.id)}
-                      className="bg-blue-600 text-white text-xs px-3 py-1 rounded-lg">
+                    <button
+                      onClick={() => handleContribute(g.id)}
+                      className="bg-blue-600 text-white text-xs px-3 py-1 rounded-lg"
+                    >
                       Add
                     </button>
-                    <button onClick={() => { setContributeId(null); setContribution('') }}
-                      className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-lg">
+                    <button
+                      onClick={() => { setContributeId(null); setContribution('') }}
+                      className="border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-lg"
+                    >
                       Cancel
                     </button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <button onClick={() => setContributeId(g.id)}
-                      className="flex-1 bg-blue-50 text-blue-600 text-xs font-medium py-1.5 rounded-lg hover:bg-blue-100">
+                    <button
+                      onClick={() => setContributeId(g.id)}
+                      className="flex-1 bg-blue-50 text-blue-600 text-xs font-medium py-1.5 rounded-lg hover:bg-blue-100"
+                    >
                       + Contribute
                     </button>
-                    <button onClick={() => handleDelete(g.id)}
-                      className="text-xs text-red-400 hover:text-red-600 px-2">
+                    <button
+                      onClick={() => handleDelete(g.id)}
+                      className="text-xs text-red-400 hover:text-red-600 px-2"
+                    >
                       Delete
                     </button>
                   </div>

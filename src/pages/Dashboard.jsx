@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/client'
 import BankConnect from '../components/BankConnect'
@@ -14,28 +15,26 @@ export default function Dashboard() {
   const month = now.getMonth() + 1
   const year = now.getFullYear()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [summaryRes, txnRes, goalRes] = await Promise.all([
-          api.get('/transactions/summary/monthly?month=' + month + '&year=' + year),
-          api.get('/transactions?page_size=5'),
-          api.get('/goals'),
-        ])
-        setSummary(summaryRes.data)
-        setTransactions(txnRes.data.items || [])
-        setGoals(goalRes.data.slice(0, 3))
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
+  const fetchData = async () => {
+    try {
+      const [summaryRes, txnRes, goalRes] = await Promise.all([
+        api.get('/transactions/summary/monthly?month=' + month + '&year=' + year),
+        api.get('/transactions?page_size=5'),
+        api.get('/goals'),
+      ])
+      setSummary(summaryRes.data)
+      setTransactions(txnRes.data.items || [])
+      setGoals(goalRes.data.slice(0, 3))
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
     }
-    fetchData()
-  }, [])
+  }
+
+  useEffect(() => { fetchData() }, [])
 
   const fmt = (n) => '$' + Math.abs(Number(n)).toLocaleString('en-US', { minimumFractionDigits: 2 })
-
   const greeting = now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening'
   const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' })
 
@@ -56,8 +55,8 @@ export default function Dashboard() {
           <span className="text-sm text-gray-500">Dashboard</span>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/transactions" className="text-sm text-gray-600 hover:text-blue-600">Transactions</a>
-          <a href="/goals" className="text-sm text-gray-600 hover:text-blue-600">Goals</a>
+          <Link to="/transactions" className="text-sm text-gray-600 hover:text-blue-600">Transactions</Link>
+          <Link to="/goals" className="text-sm text-gray-600 hover:text-blue-600">Goals</Link>
           <span className="text-sm text-gray-600">{user && user.full_name}</span>
           {user && user.plan === 'free' && (
             <span className="bg-amber-100 text-amber-700 text-xs font-medium px-2 py-1 rounded-full">
@@ -78,7 +77,7 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-900">
-            Good {greeting}, {user && user.full_name ? user.full_name.split(' ')[0] : 'there'} 
+            Good {greeting}, {user && user.full_name ? user.full_name.split(' ')[0] : 'there'}
           </h2>
           <p className="text-gray-500 mt-1">
             Here is your financial snapshot for {monthName}
@@ -115,15 +114,15 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-gray-900">Recent Transactions</h3>
-              <a href="/transactions" className="text-xs text-blue-600 hover:underline">See all</a>
+              <Link to="/transactions" className="text-xs text-blue-600 hover:underline">See all</Link>
             </div>
             {transactions.length === 0 ? (
               <div className="text-center py-8 text-gray-400 text-sm">
                 No transactions yet.
                 <br />
-                <a href="/transactions" className="text-blue-600 hover:underline mt-1 block">
+                <Link to="/transactions" className="text-blue-600 hover:underline mt-1 block">
                   Add your first one
-                </a>
+                </Link>
               </div>
             ) : (
               <div className="space-y-3">
@@ -145,15 +144,15 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-gray-900">Savings Goals</h3>
-              <a href="/goals" className="text-xs text-blue-600 hover:underline">See all</a>
+              <Link to="/goals" className="text-xs text-blue-600 hover:underline">See all</Link>
             </div>
             {goals.length === 0 ? (
               <div className="text-center py-8 text-gray-400 text-sm">
                 No goals yet.
                 <br />
-                <a href="/goals" className="text-blue-600 hover:underline mt-1 block">
+                <Link to="/goals" className="text-blue-600 hover:underline mt-1 block">
                   Create your first goal
-                </a>
+                </Link>
               </div>
             ) : (
               <div className="space-y-4">
